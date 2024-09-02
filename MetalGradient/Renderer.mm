@@ -91,6 +91,9 @@ NSString * NSStringFromRenderDispatchMethod(RendererStyle method) {
         view.depthStencilPixelFormat = MTLPixelFormatInvalid;
         view.clearColor = MTLClearColorMake(1.f, 1.f, 0.9f, 1.f);
         
+        // TOOD: Trait
+        view.preferredFramesPerSecond = 120;
+        
         //
         
         NSURL *applicationURL = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask][0] URLByAppendingPathComponent:@"MetalGradient"];
@@ -297,9 +300,9 @@ NSString * NSStringFromRenderDispatchMethod(RendererStyle method) {
     }
     
     if (_isColorPivotIncreasing) {
-        _colorPivot += 0.01;
+        _colorPivot += 0.005;
     } else {
-        _colorPivot -= 0.01;
+        _colorPivot -= 0.005;
     }
     
     MTLCommandBufferDescriptor *commandBufferDescriptor = [MTLCommandBufferDescriptor new];
