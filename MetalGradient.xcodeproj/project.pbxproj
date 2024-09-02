@@ -6,7 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4F7F1DC62C85D2BB001C4ADB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7F1DC52C85D2BB001C4ADB /* MetalKit.framework */; };
+		4F7F1DFF2C85F527001C4ADB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7F1DFE2C85F527001C4ADB /* Metal.framework */; };
+		4F7F1E012C85F532001C4ADB /* ModelIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7F1E002C85F532001C4ADB /* ModelIO.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		4F7F1DC52C85D2BB001C4ADB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		4F7F1DFE2C85F527001C4ADB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		4F7F1E002C85F532001C4ADB /* ModelIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ModelIO.framework; path = System/Library/Frameworks/ModelIO.framework; sourceTree = SDKROOT; };
 		4FEC6E652C84ADCA006C6717 /* MetalGradient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalGradient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -48,16 +57,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F7F1E012C85F532001C4ADB /* ModelIO.framework in Frameworks */,
+				4F7F1DFF2C85F527001C4ADB /* Metal.framework in Frameworks */,
+				4F7F1DC62C85D2BB001C4ADB /* MetalKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F7F1DC42C85D2BB001C4ADB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F7F1E002C85F532001C4ADB /* ModelIO.framework */,
+				4F7F1DFE2C85F527001C4ADB /* Metal.framework */,
+				4F7F1DC52C85D2BB001C4ADB /* MetalKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4FEC6E5C2C84ADCA006C6717 = {
 			isa = PBXGroup;
 			children = (
 				4FEC6E672C84ADCA006C6717 /* MetalGradient */,
+				4F7F1DC42C85D2BB001C4ADB /* Frameworks */,
 				4FEC6E662C84ADCA006C6717 /* Products */,
 			);
 			sourceTree = "<group>";

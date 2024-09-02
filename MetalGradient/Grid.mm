@@ -28,17 +28,18 @@
         })
         | std::ranges::to<std::vector<simd_float3>>();
         
-        _vertices = std::vector<simd_float3>(verticalVertices.size() + horizontalVertices.size());
+        _vertices = std::vector<simd_float3>();
+        _vertices.reserve(verticalVertices.size() + horizontalVertices.size());
         _vertices.insert(_vertices.cend(), verticalVertices.cbegin(), verticalVertices.cend());
         _vertices.insert(_vertices.cend(), horizontalVertices.cbegin(), horizontalVertices.cend());
         
-        id<MTLBuffer> vertexBuffer = [device newBufferWithBytes:_vertices.data() length:_vertices.size() options:MTLResourceStorageModePrivate | MTLResourceHazardTrackingModeTracked];
+        id<MTLBuffer> vertexBuffer = [device newBufferWithBytes:_vertices.data() length:sizeof(simd_float3) * _vertices.size() options:MTLResourceHazardTrackingModeTracked];
         
         //
         
         _indices = std::views::iota(0, 77) | std::ranges::to<std::vector<std::uint16_t>>();
         
-        id<MTLBuffer> indexBuffer = [device newBufferWithBytes:_indices.data() length:_indices.size() options:MTLResourceStorageModePrivate | MTLResourceHazardTrackingModeTracked];
+        id<MTLBuffer> indexBuffer = [device newBufferWithBytes:_indices.data() length:sizeof(std::uint16_t) * _indices.size() options:MTLResourceHazardTrackingModeTracked];
         
         //
         
