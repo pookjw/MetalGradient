@@ -323,7 +323,7 @@ NSString * NSStringFromRenderDispatchMethod(RendererStyle method) {
     [renderCommandEncoder setFragmentBytes:&_style length:sizeof(RendererStyle) atIndex:0];
     
     simd_uint2 size = simd_make_uint2(CGRectGetWidth(view.bounds) * view.traitCollection.displayScale, CGRectGetWidth(view.bounds) * view.traitCollection.displayScale);
-    [renderCommandEncoder setFragmentBytes:&size length:sizeof(simd_double2) atIndex:1];
+    [renderCommandEncoder setFragmentBytes:&size length:sizeof(simd_uint2) atIndex:1];
     
     [renderCommandEncoder setFragmentBytes:&_colorPivot length:sizeof(float) atIndex:2];
     
