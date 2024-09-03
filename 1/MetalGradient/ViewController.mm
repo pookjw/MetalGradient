@@ -43,6 +43,8 @@
         [stackView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
         [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
     ]];
+    
+    self.navigationItem.hidesBackButton = YES;
 }
 
 - (UIStackView *)stackView {
