@@ -20,7 +20,7 @@ RendererStyle * RendererStyleMethodAllValues(NSUInteger *count) {
         RendererStyle::Step,
         RendererStyle::Smoothstep,
         RendererStyle::SmoothstepMix,
-        RendererStyle::Length
+        RendererStyle::Length,
     };
     
     return results;
