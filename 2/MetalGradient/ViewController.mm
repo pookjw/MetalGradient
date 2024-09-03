@@ -11,7 +11,7 @@
 
 @interface ViewController () <ColorsRulerViewDelegate>
 @property (retain, nonatomic, readonly) UIStackView *stackView;
-@property (retain, nonatomic, readonly) ColorsRulerView *colorsRulerView;
+@property (retain, nonatomic, readonly) ColorsRulerViewController *colorsRulerView;
 @property (retain, nonatomic, readonly) MTKView *mtkView;
 @end
 
@@ -39,8 +39,7 @@
         [stackView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
         [stackView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
         [stackView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-        [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
-        [self.colorsRulerView.heightAnchor constraintEqualToConstant:60.]
+        [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
     ]];
 }
 
@@ -61,10 +60,10 @@
     return [stackView autorelease];
 }
 
-- (ColorsRulerView *)colorsRulerView {
+- (ColorsRulerViewController *)colorsRulerView {
     if (auto colorsRulerView = _colorsRulerView) return colorsRulerView;
     
-    ColorsRulerView *colorsRulerView = [ColorsRulerView new];
+    ColorsRulerViewController *colorsRulerView = [ColorsRulerViewController new];
     colorsRulerView.delegate = self;
     
     _colorsRulerView = [colorsRulerView retain];
@@ -78,6 +77,10 @@
     
     _mtkView = [mtkView retain];
     return [mtkView autorelease];
+}
+
+- (void)colorsRulerView:(ColorsRulerViewController *)colorsRulerView didChangeColorComponents:(NSArray<ColorComponent *> *)colorComponents {
+    
 }
 
 @end
