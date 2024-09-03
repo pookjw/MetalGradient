@@ -6,8 +6,10 @@
 //
 
 #import "ColorsRulerView.h"
+#import <objc/message.h>
+#import <objc/runtime.h>
 
-@interface ColorsRulerView ()
+@interface ColorsRulerView () <UIColorPickerViewControllerDelegate>
 @property (retain, nonatomic, readonly) UIButton *addButton;
 @property (retain, nonatomic, readonly) NSMutableArray<UIButton *> *colorComponentButtons;
 @end
@@ -93,7 +95,16 @@
 }
 
 - (void)didTriggerAddButton:(UIButton *)sender {
+    UIColorPickerViewController *colorPickerViewController = [UIColorPickerViewController new];
+    colorPickerViewController.supportsAlpha = NO;
+    colorPickerViewController.delegate = self;
+    colorPickerViewController.modalPresentationStyle = UIModalPresentationPopover;
+    colorPickerViewController.popoverPresentationController.sourceView = sender;
     
+    __kindof UIViewController *viewController = reinterpret_cast<id (*)(id, SEL)>(objc_msgSend)(self, sel_registerName("_viewControllerForAncestor"));
+    
+    [viewController presentViewController:colorPickerViewController animated:YES completion:nil];
+    [colorPickerViewController release];
 }
 
 - (UIButton *)makeColorComponentButtonWithCompoent:(ColorComponent *)component {
@@ -111,6 +122,10 @@
     UIButton *colorComponentButton = [UIButton buttonWithConfiguration:configuration primaryAction:nil];
     
     return colorComponentButton;
+}
+
+- (void)colorPickerViewController:(UIColorPickerViewController *)viewController didSelectColor:(UIColor *)color continuously:(BOOL)continuously {
+    
 }
 
 @end

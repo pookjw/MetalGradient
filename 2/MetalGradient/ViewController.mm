@@ -11,7 +11,7 @@
 
 @interface ViewController () <ColorsRulerViewDelegate>
 @property (retain, nonatomic, readonly) UIStackView *stackView;
-@property (retain, nonatomic, readonly) ColorsRulerViewController *colorsRulerView;
+@property (retain, nonatomic, readonly) ColorsRulerView *colorsRulerView;
 @property (retain, nonatomic, readonly) MTKView *mtkView;
 @end
 
@@ -60,10 +60,10 @@
     return [stackView autorelease];
 }
 
-- (ColorsRulerViewController *)colorsRulerView {
+- (ColorsRulerView *)colorsRulerView {
     if (auto colorsRulerView = _colorsRulerView) return colorsRulerView;
     
-    ColorsRulerViewController *colorsRulerView = [ColorsRulerViewController new];
+    ColorsRulerView *colorsRulerView = [ColorsRulerView new];
     colorsRulerView.delegate = self;
     
     _colorsRulerView = [colorsRulerView retain];
@@ -79,7 +79,7 @@
     return [mtkView autorelease];
 }
 
-- (void)colorsRulerView:(ColorsRulerViewController *)colorsRulerView didChangeColorComponents:(NSArray<ColorComponent *> *)colorComponents {
+- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeColorComponents:(NSArray<ColorComponent *> *)colorComponents {
     
 }
 
