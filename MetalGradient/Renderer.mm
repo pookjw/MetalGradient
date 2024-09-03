@@ -345,12 +345,12 @@ NSString * NSStringFromRenderDispatchMethod(RendererStyle method) {
     
     //
     
-//    if (_showGrid) {
-//        [renderCommandEncoder setTriangleFillMode:MTLTriangleFillModeLines];
-//        [renderCommandEncoder setRenderPipelineState:_gridRenderPipelineState];
-//        [renderCommandEncoder setVertexBuffer:_grid.vertexBuffer offset:0 atIndex:0];
-//        [renderCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeLine indexCount:_grid.indices.size() indexType:MTLIndexTypeUInt16 indexBuffer:_grid.indexBuffer indexBufferOffset:0];
-//    }
+    if (_showGrid) {
+        [renderCommandEncoder setTriangleFillMode:MTLTriangleFillModeLines];
+        [renderCommandEncoder setRenderPipelineState:_gridRenderPipelineState];
+        [renderCommandEncoder setVertexBuffer:_grid.vertexBuffer offset:0 atIndex:0];
+        [renderCommandEncoder drawIndexedPrimitives:MTLPrimitiveTypeLine indexCount:_grid.indices.size() indexType:MTLIndexTypeUInt16 indexBuffer:_grid.indexBuffer indexBufferOffset:0];
+    }
     
     //
     
