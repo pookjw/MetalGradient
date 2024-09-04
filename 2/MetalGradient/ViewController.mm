@@ -80,7 +80,7 @@
 - (ColorGradientView *)gradientView {
     if (auto gradientView = _gradientView) return gradientView;
     
-    ColorGradientView *gradientView = [[ColorGradientView alloc] initWithFrame:self.view.bounds];
+    ColorGradientView *gradientView = [ColorGradientView new];
     
     _gradientView = [gradientView retain];
     return [gradientView autorelease];

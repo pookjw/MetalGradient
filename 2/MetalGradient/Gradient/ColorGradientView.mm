@@ -105,6 +105,9 @@
 }
 
 - (void)drawWithComponents:(NSSet<ColorComponent *> *)components {
+    if (CGRectEqualToRect(self.metalLayer.frame, CGRectNull)) return;
+    if (CGRectEqualToRect(self.metalLayer.frame, CGRectZero)) return;
+    
     id<CAMetalDrawable> drawable = self.metalLayer.nextDrawable;
     
     if (drawable == nil) return;
