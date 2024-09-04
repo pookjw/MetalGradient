@@ -30,13 +30,8 @@ namespace metal_gradient {
                                   constant float &width [[buffer(2)]],
                                   constant packed_float3 &startColor [[buffer(3)]],
                                   constant packed_float3 &endColor [[buffer(4)]]) {
-//        float result = smoothstep(0., (endX - startX) * width, in.position.x - (startX + 1.f) * width);
-//        float3 color = mix(startColor, endColor, result);
         float percentage = (in.position.x - (startX + 1.f) * width * 0.5f) / ((endX - startX) * width * 0.5f);
-        float3 color = float3(startColor.x + (endColor.x - startColor.x) * percentage,
-                              startColor.y + (endColor.y - startColor.y) * percentage,
-                              startColor.z + (endColor.z - startColor.z) * percentage);
+        float3 color = mix(startColor, endColor, percentage);
         return float4(color, 1.f);
-//        return float4(in.endColor, 1.f);
     }
 }
