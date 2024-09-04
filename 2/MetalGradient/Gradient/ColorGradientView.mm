@@ -73,7 +73,6 @@
         _commandQueue = [commandQueue retain];
         _renderPipelineState = [renderPipelineState retain];
         
-        [library release];
         [commandQueue release];
         [renderPipelineState release];
     }
