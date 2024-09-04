@@ -37,14 +37,15 @@
     [self.view addSubview:stackView];
     [NSLayoutConstraint activateConstraints:@[
         [stackView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
-        [stackView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-        [stackView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-        [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
+        [stackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [stackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        [stackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
     ]];
     
     self.rulerView.components = [NSSet setWithArray:@[
-        [ColorComponent componentByLevel:0.3 color:UIColor.redColor],
-        [ColorComponent componentByLevel:0.7 color:UIColor.cyanColor]
+        [ColorComponent componentByLevel:0.f color:UIColor.redColor],
+        [ColorComponent componentByLevel:0.3f color:UIColor.greenColor],
+        [ColorComponent componentByLevel:1.f color:UIColor.blueColor]
     ]];
     self.gradientView.components = self.rulerView.components;
 }
