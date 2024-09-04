@@ -9,7 +9,8 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 
-@interface ColorsRulerView () <UIColorPickerViewControllerDelegate>
+@interface ColorsRulerView () <UIColorPickerViewControllerDelegate, UIContextMenuInteractionDelegate>
+@property (class, nonatomic, readonly) void *componentKey;
 @property (retain, nonatomic, readonly) UIButton *addButton;
 @property (copy, nonatomic) NSDictionary<ColorComponent *, __kindof UIView *> *colorViewsByComponent;
 @property (retain, nonatomic, nullable) __kindof UIView *draggingColorView;
@@ -18,6 +19,11 @@
 
 @implementation ColorsRulerView
 @synthesize addButton = _addButton;
+
++ (void *)componentKey {
+    static void *componentKey = &componentKey;
+    return componentKey;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
@@ -36,7 +42,6 @@
 }
 
 - (void)dealloc {
-    [_components release];
     [_addButton release];
     [_colorViewsByComponent release];
     [_draggingColorView release];
@@ -55,7 +60,6 @@
 - (void)ColorsRulerView_commonInit {
 //    self.backgroundColor = UIColor.grayColor;
     
-    _components = [NSSet new];
     _colorViewsByComponent = [NSDictionary new];
     
     //
@@ -74,18 +78,13 @@
     UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(didTriggerPanGestureRecognizer:)];
     [self addGestureRecognizer:panGestureRecognizer];
     [panGestureRecognizer release];
-    
-    //
-    
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTriggerTapGestureRecognizer:)];
-    [self addGestureRecognizer:tapGestureRecognizer];
-    [tapGestureRecognizer release];
+}
+
+- (NSSet<ColorComponent *> *)components {
+    return [NSSet setWithArray:self.colorViewsByComponent.allKeys];
 }
 
 - (void)setComponents:(NSSet<ColorComponent *> *)components {
-    [_components release];
-    _components = [components copy];
-    
     NSMutableDictionary<ColorComponent *, __kindof UIView *> *newColorViewsByComponent = [[NSMutableDictionary alloc] initWithCapacity:components.count];
     
     [self.colorViewsByComponent enumerateKeysAndObjectsUsingBlock:^(ColorComponent * _Nonnull component, __kindof UIView * _Nonnull colorView, BOOL * _Nonnull stop) {
@@ -133,20 +132,15 @@
         frame.origin.x = newX;
         colorView.frame = frame;
         
-        NSMutableSet<ColorComponent *> *components = [self.components mutableCopy];
         NSMutableDictionary<ColorComponent *, __kindof UIView *> *colorViewsByComponent = [self.colorViewsByComponent mutableCopy];
         
         ColorComponent *oldComponent = [colorViewsByComponent allKeysForObject:colorView][0];
         [colorViewsByComponent removeObjectForKey:oldComponent];
-        [components removeObject:oldComponent];
         
         ColorComponent *newComponent = [oldComponent compnentByApplingLevel:(CGRectGetMinX(colorView.frame) + CGRectGetWidth(colorView.bounds) * 0.5) / CGRectGetWidth(self.bounds)];
         colorViewsByComponent[newComponent] = colorView;
-        [components addObject:newComponent];
         
-        _components = [components retain];
         _colorViewsByComponent = [colorViewsByComponent retain];
-        [components release];
         [colorViewsByComponent release];
         
         [self.delegate colorsRulerView:self didChangeComponents:self.components];
@@ -196,10 +190,40 @@
 }
 
 - (void)didTriggerTapGestureRecognizer:(UITapGestureRecognizer *)sender {
-    __kindof UIView * _Nullable colorView = [self colorViewAtLocation:[sender locationInView:self]];
-    if (colorView == nil) return;
+    for (UIContextMenuInteraction *contextMenuInteraction in sender.view.interactions) {
+        if (![contextMenuInteraction isKindOfClass:UIContextMenuInteraction.class]) continue;
+        
+        CGPoint location = [sender locationInView:sender.view];
+        reinterpret_cast<void (*)(id, SEL, CGPoint)>(objc_msgSend)(contextMenuInteraction, sel_registerName("_presentMenuAtLocation:"), location);
+    }
+}
+
+- (void)startEditingColorWithComponent:(ColorComponent *)component {
+    UIColorPickerViewController *colorPickerViewController = [UIColorPickerViewController new];
+    colorPickerViewController.selectedColor = component.color;
+    colorPickerViewController.supportsAlpha = NO;
+    colorPickerViewController.delegate = self;
+    colorPickerViewController.modalPresentationStyle = UIModalPresentationPopover;
+    colorPickerViewController.popoverPresentationController.sourceView = self.colorViewsByComponent[component];
     
+    objc_setAssociatedObject(colorPickerViewController, ColorsRulerView.componentKey, component, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
+    __kindof UIViewController *viewController = reinterpret_cast<id (*)(id, SEL)>(objc_msgSend)(self, sel_registerName("_viewControllerForAncestor"));
+    
+    [viewController presentViewController:colorPickerViewController animated:YES completion:nil];
+    [colorPickerViewController release];
+}
+
+- (void)removeComponent:(ColorComponent *)component {
+    NSMutableDictionary<ColorComponent *, __kindof UIView *> *colorViewsByComponent = [self.colorViewsByComponent mutableCopy];
+    
+    [colorViewsByComponent[component] removeFromSuperview];
+    [colorViewsByComponent removeObjectForKey:component];
+    
+    self.colorViewsByComponent = colorViewsByComponent;
+    [colorViewsByComponent release];
+    
+    [self.delegate colorsRulerView:self didChangeComponents:self.components];
 }
 
 - (void)didTriggerAddButton:(UIButton *)sender {
@@ -226,7 +250,13 @@
     
     __kindof UIView *colorView =reinterpret_cast<id (*)(id, SEL, id)>(objc_msgSend)([objc_lookUpClass("_UISystemBackgroundView") alloc], sel_registerName("initWithConfiguration:"), configuration);
     
-    colorView.userInteractionEnabled = NO;
+    UIContextMenuInteraction *contextMenuInteraction = [[UIContextMenuInteraction alloc] initWithDelegate:self];
+    [colorView addInteraction:contextMenuInteraction];
+    [contextMenuInteraction release];
+    
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTriggerTapGestureRecognizer:)];
+    [colorView addGestureRecognizer:tapGestureRecognizer];
+    [tapGestureRecognizer release];
     
     return [colorView autorelease];
 }
@@ -273,21 +303,70 @@
 }
 
 - (void)colorPickerViewController:(UIColorPickerViewController *)viewController didSelectColor:(UIColor *)color continuously:(BOOL)continuously {
-    if (continuously) return;
+    if (ColorComponent *editingComponent = objc_getAssociatedObject(viewController, ColorsRulerView.componentKey)) {
+        ColorComponent *newComponent = [editingComponent compnentByApplingColor:color];
+        NSMutableDictionary<ColorComponent *, __kindof UIView *> *colorViewsByComponent = [self.colorViewsByComponent mutableCopy];
+        
+        __kindof UIView *colorView = colorViewsByComponent[editingComponent];
+        UIBackgroundConfiguration *configuration = reinterpret_cast<id (*)(id, SEL)>(objc_msgSend)(colorView, sel_registerName("configuration"));
+        configuration.backgroundColor = color;
+        reinterpret_cast<void (*)(id, SEL, id)>(objc_msgSend)(colorView, sel_registerName("setConfiguration:"), configuration);
+        
+        [colorViewsByComponent removeObjectForKey:editingComponent];
+        colorViewsByComponent[newComponent] = colorView;
+        
+        self.colorViewsByComponent = colorViewsByComponent;
+        [colorViewsByComponent release];
+        
+        objc_setAssociatedObject(viewController, ColorsRulerView.componentKey, newComponent, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        
+        [self.delegate colorsRulerView:self didChangeComponents:self.components];
+    } else {
+        NSMutableSet<ColorComponent *> *components = [self.components mutableCopy];
+        
+        ColorComponent *component = [[ColorComponent alloc] initWithLevel:0.5f color:color];
+        [components addObject:component];
+        
+        self.components = components;
+        [components release];
+        
+        objc_setAssociatedObject(viewController, ColorsRulerView.componentKey, component, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        [component release];
+        
+        [self.delegate colorsRulerView:self didChangeComponents:self.components];
+    }
+}
+
+- (UIContextMenuConfiguration *)contextMenuInteraction:(UIContextMenuInteraction *)interaction configurationForMenuAtLocation:(CGPoint)location {
+    __weak auto weakSelf = self;
+    ColorComponent *component = [self.colorViewsByComponent allKeysForObject:interaction.view][0];
     
-    [viewController dismissViewControllerAnimated:YES completion:nil];
+    UIContextMenuConfiguration *configuration = [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                                                                        previewProvider:^UIViewController * _Nullable{
+        return nil;
+    }
+                                                                                         actionProvider:^UIMenu * _Nullable(NSArray<UIMenuElement *> * _Nonnull suggestedActions) {
+        NSMutableArray<UIMenuElement *> *children = [suggestedActions mutableCopy];
+        
+        UIAction *editAction = [UIAction actionWithTitle:@"Edit Color" image:[UIImage systemImageNamed:@"paintpalette"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+            [weakSelf startEditingColorWithComponent:component];
+        }];
+        
+        UIAction *removeAction = [UIAction actionWithTitle:@"Remove" image:[UIImage systemImageNamed:@"trash"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+            [weakSelf removeComponent:component];
+        }];
+        
+        removeAction.attributes = UIMenuOptionsDestructive;
+        
+        [children addObjectsFromArray:@[editAction, removeAction]];
+        
+        UIMenu *menu = [UIMenu menuWithChildren:children];
+        [children release];
+        
+        return menu;
+    }];
     
-    NSMutableSet<ColorComponent *> *components = [self.components mutableCopy];
-    
-    ColorComponent *component = [[ColorComponent alloc] initWithLevel:0.5f color:color];
-    
-    [components addObject:component];
-    [component release];
-    
-    self.components = components;
-    [components release];
-    
-    [self.delegate colorsRulerView:self didChangeComponents:self.components];
+    return configuration;
 }
 
 @end

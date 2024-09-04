@@ -19,6 +19,11 @@
     return self;
 }
 
+- (void)dealloc {
+    [_color release];
+    [super dealloc];
+}
+
 + (ColorComponent *)componentByLevel:(float)level color:(UIColor *)color {
     return [[[ColorComponent alloc] initWithLevel:level color:color] autorelease];
 }

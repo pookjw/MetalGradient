@@ -7,23 +7,23 @@
 
 #import "ViewController.h"
 #import "ColorsRulerView.h"
-#import <MetalKit/MetalKit.h>
+#import "ColorGradientView.h"
 
 @interface ViewController () <ColorsRulerViewDelegate>
 @property (retain, nonatomic, readonly) UIStackView *stackView;
-@property (retain, nonatomic, readonly) ColorsRulerView *colorsRulerView;
-@property (retain, nonatomic, readonly) MTKView *mtkView;
+@property (retain, nonatomic, readonly) ColorsRulerView *rulerView;
+@property (retain, nonatomic, readonly) ColorGradientView *gradientView;
 @end
 
 @implementation ViewController
 @synthesize stackView = _stackView;
-@synthesize colorsRulerView = _colorsRulerView;
-@synthesize mtkView = _mtkView;
+@synthesize rulerView = _rulerView;
+@synthesize gradientView = _gradientView;
 
 - (void)dealloc {
     [_stackView release];
-    [_colorsRulerView release];
-    [_mtkView release];
+    [_rulerView release];
+    [_gradientView release];
     [super dealloc];
 }
 
@@ -42,22 +42,23 @@
         [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
     ]];
     
-    self.colorsRulerView.components = [NSSet setWithArray:@[
+    self.rulerView.components = [NSSet setWithArray:@[
         [ColorComponent componentByLevel:0.3 color:UIColor.redColor],
         [ColorComponent componentByLevel:0.7 color:UIColor.cyanColor]
     ]];
+    self.gradientView.components = self.rulerView.components;
 }
 
 - (UIStackView *)stackView {
     if (auto stackView = _stackView) return stackView;
     
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.colorsRulerView,
-        self.mtkView
+        self.rulerView,
+        self.gradientView
     ]];
     
     stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.spacing = 8.;
+    stackView.spacing = 0.;
     stackView.distribution = UIStackViewDistributionFill;
     stackView.alignment = UIStackViewAlignmentFill;
     
@@ -65,27 +66,27 @@
     return [stackView autorelease];
 }
 
-- (ColorsRulerView *)colorsRulerView {
-    if (auto colorsRulerView = _colorsRulerView) return colorsRulerView;
+- (ColorsRulerView *)rulerView {
+    if (auto rulerView = _rulerView) return rulerView;
     
-    ColorsRulerView *colorsRulerView = [ColorsRulerView new];
-    colorsRulerView.delegate = self;
+    ColorsRulerView *rulerView = [ColorsRulerView new];
+    rulerView.delegate = self;
     
-    _colorsRulerView = [colorsRulerView retain];
-    return [colorsRulerView autorelease];
+    _rulerView = [rulerView retain];
+    return [rulerView autorelease];
 }
 
-- (MTKView *)mtkView {
-    if (auto mtkView = _mtkView) return mtkView;
+- (ColorGradientView *)gradientView {
+    if (auto gradientView = _gradientView) return gradientView;
     
-    MTKView *mtkView = [MTKView new];
+    ColorGradientView *gradientView = [[ColorGradientView alloc] initWithFrame:self.view.bounds];
     
-    _mtkView = [mtkView retain];
-    return [mtkView autorelease];
+    _gradientView = [gradientView retain];
+    return [gradientView autorelease];
 }
 
-- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeComponents:(NSArray<ColorComponent *> *)colorComponents {
-    
+- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeComponents:(NSSet<ColorComponent *> *)components {
+    self.gradientView.components = components;
 }
 
 @end
