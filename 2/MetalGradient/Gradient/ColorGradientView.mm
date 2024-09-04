@@ -108,6 +108,8 @@
     if (CGRectEqualToRect(self.metalLayer.frame, CGRectNull)) return;
     if (CGRectEqualToRect(self.metalLayer.frame, CGRectZero)) return;
     
+    self.metalLayer.drawableSize = self.metalLayer.bounds.size;
+    
     id<CAMetalDrawable> drawable = self.metalLayer.nextDrawable;
     
     if (drawable == nil) return;
@@ -122,6 +124,8 @@
     colorAttachmentDescriptor.storeAction = MTLStoreActionStore;
     renderPassDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
     [colorAttachmentDescriptor release];
+    renderPassDescriptor.renderTargetWidth = CGRectGetWidth(self.metalLayer.bounds);
+    renderPassDescriptor.renderTargetHeight = CGRectGetHeight(self.metalLayer.bounds);
     
     id<MTLRenderCommandEncoder> renderCommandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [renderPassDescriptor release];
