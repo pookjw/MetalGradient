@@ -12,12 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ColorsRulerView;
 @protocol ColorsRulerViewDelegate <NSObject>
-- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeColorComponents:(NSArray<ColorComponent *> *)colorComponents;
+- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeComponents:(NSSet<ColorComponent *> *)colorComponents;
 @end
 
 @interface ColorsRulerView : UIView
 @property (weak, nonatomic) id<ColorsRulerViewDelegate> delegate;
-@property (copy, nonatomic) NSArray<ColorComponent *> *colorComponents;
+@property (copy, nonatomic) NSSet<ColorComponent *> *components;
 @end
 
 NS_ASSUME_NONNULL_END

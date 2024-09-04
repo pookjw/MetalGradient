@@ -41,6 +41,11 @@
         [stackView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
         [stackView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
     ]];
+    
+    self.colorsRulerView.components = [NSSet setWithArray:@[
+        [ColorComponent componentByLevel:0.3 color:UIColor.redColor],
+        [ColorComponent componentByLevel:0.7 color:UIColor.cyanColor]
+    ]];
 }
 
 - (UIStackView *)stackView {
@@ -79,7 +84,7 @@
     return [mtkView autorelease];
 }
 
-- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeColorComponents:(NSArray<ColorComponent *> *)colorComponents {
+- (void)colorsRulerView:(ColorsRulerView *)colorsRulerView didChangeComponents:(NSArray<ColorComponent *> *)colorComponents {
     
 }
 
